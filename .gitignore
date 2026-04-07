@@ -20,3 +20,7 @@ uv.lock
 rlinf/envs/maniskill/assets
 PKG-INFO
 *.egg-info/
+yunzhe/monitor/runs
+logs/*
+RLinf-Pi0-LIBERO-Spatial-Object-Goal-SFT/*
+RLinf-Pi05-LIBERO-SFT/*

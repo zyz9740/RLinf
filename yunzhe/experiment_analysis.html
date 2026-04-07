@@ -1,0 +1,2033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Experiment Analysis Report</title>
+    <style>
+        :root {
+            --bg: #f5f5f5;
+            --panel: #ffffff;
+            --border: #ddd;
+            --header-bg: #2c3e50;
+            --header-text: #ecf0f1;
+            --accent: #3498db;
+            --text: #333;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--header-bg);
+            margin-bottom: 10px;
+        }
+        .summary {
+            background: var(--panel);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .summary h2 {
+            margin-top: 0;
+            color: var(--accent);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--panel);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        th {
+            background: var(--header-bg);
+            color: var(--header-text);
+            padding: 12px 8px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+            user-select: none;
+        }
+        th:hover {
+            background: #34495e;
+        }
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        tr:hover {
+            background: #f8f9fa;
+        }
+        .numeric {
+            text-align: right;
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+        .section {
+            background: var(--panel);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            margin-top: 0;
+            color: var(--accent);
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 10px;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        .filter-group label {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        select {
+            padding: 6px 10px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .highlight-best {
+            background: #d4edda !important;
+            font-weight: 600;
+        }
+        .highlight-worst {
+            background: #f8d7da !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Training Experiment Analysis Report</h1>
+        <p>Comprehensive analysis of performance and resource utilization across different parameter configurations</p>
+
+        <div class="summary">
+            <h2>📊 Summary</h2>
+            <p><strong>Total Experiments:</strong> 37</p>
+            <p><strong>Placement Modes:</strong> split</p>
+            <p><strong>Environment Counts:</strong> 2, 4, 8, 16, 32, 64, 96</p>
+            <p><strong>Micro Batch Sizes:</strong> 1, 2, 4, 8, 16, 32</p>
+        </div>
+
+        <div class="section">
+            <h2>⚡ Performance Metrics</h2>
+            <table id="perfTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('perfTable', 0)">Run ID</th>
+                        <th onclick="sortTable('perfTable', 1)">Mode</th>
+                        <th onclick="sortTable('perfTable', 2)" class="numeric">Envs</th>
+                        <th onclick="sortTable('perfTable', 3)" class="numeric">MBS</th>
+                        <th onclick="sortTable('perfTable', 4)" class="numeric">Rollout Avg (s/epoch)</th>
+                        <th onclick="sortTable('perfTable', 5)" class="numeric">Step Time (s)</th>
+                        <th onclick="sortTable('perfTable', 6)" class="numeric">Generate Rollouts (s)</th>
+                        <th onclick="sortTable('perfTable', 7)" class="numeric">Actor Training (s)</th>
+                        <th onclick="sortTable('perfTable', 8)" class="numeric">Env Interact (s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>env2_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">22.47</td>
+                        <td class="numeric">366.17</td>
+                        <td class="numeric">183.90</td>
+                        <td class="numeric">76.97</td>
+                        <td class="numeric">183.40</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">22.74</td>
+                        <td class="numeric">336.18</td>
+                        <td class="numeric">186.20</td>
+                        <td class="numeric">50.61</td>
+                        <td class="numeric">185.80</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">22.39</td>
+                        <td class="numeric">374.95</td>
+                        <td class="numeric">185.10</td>
+                        <td class="numeric">37.94</td>
+                        <td class="numeric">184.60</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">22.53</td>
+                        <td class="numeric">307.84</td>
+                        <td class="numeric">184.20</td>
+                        <td class="numeric">32.17</td>
+                        <td class="numeric">183.70</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">23.53</td>
+                        <td class="numeric">319.01</td>
+                        <td class="numeric">194.70</td>
+                        <td class="numeric">30.30</td>
+                        <td class="numeric">194.10</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">23.21</td>
+                        <td class="numeric">313.12</td>
+                        <td class="numeric">190.40</td>
+                        <td class="numeric">29.51</td>
+                        <td class="numeric">189.80</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">30.86</td>
+                        <td class="numeric">611.03</td>
+                        <td class="numeric">248.90</td>
+                        <td class="numeric">150.30</td>
+                        <td class="numeric">247.50</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">30.66</td>
+                        <td class="numeric">444.05</td>
+                        <td class="numeric">249.40</td>
+                        <td class="numeric">98.17</td>
+                        <td class="numeric">248.20</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">30.94</td>
+                        <td class="numeric">564.25</td>
+                        <td class="numeric">253.90</td>
+                        <td class="numeric">73.68</td>
+                        <td class="numeric">252.60</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">30.99</td>
+                        <td class="numeric">406.42</td>
+                        <td class="numeric">249.70</td>
+                        <td class="numeric">62.13</td>
+                        <td class="numeric">248.50</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">31.92</td>
+                        <td class="numeric">409.11</td>
+                        <td class="numeric">257.30</td>
+                        <td class="numeric">57.23</td>
+                        <td class="numeric">255.90</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">30.05</td>
+                        <td class="numeric">394.34</td>
+                        <td class="numeric">242.20</td>
+                        <td class="numeric">55.71</td>
+                        <td class="numeric">240.90</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">42.47</td>
+                        <td class="numeric">981.76</td>
+                        <td class="numeric">343.30</td>
+                        <td class="numeric">299.70</td>
+                        <td class="numeric">340.80</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">41.46</td>
+                        <td class="numeric">838.88</td>
+                        <td class="numeric">335.30</td>
+                        <td class="numeric">192.90</td>
+                        <td class="numeric">332.70</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">41.53</td>
+                        <td class="numeric">697.06</td>
+                        <td class="numeric">335.50</td>
+                        <td class="numeric">141.80</td>
+                        <td class="numeric">333.30</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">43.45</td>
+                        <td class="numeric">815.35</td>
+                        <td class="numeric">350.50</td>
+                        <td class="numeric">122.10</td>
+                        <td class="numeric">348.40</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">43.87</td>
+                        <td class="numeric">694.49</td>
+                        <td class="numeric">354.50</td>
+                        <td class="numeric">117.20</td>
+                        <td class="numeric">352.10</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">39.68</td>
+                        <td class="numeric">547.86</td>
+                        <td class="numeric">320.00</td>
+                        <td class="numeric">114.20</td>
+                        <td class="numeric">318.10</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">66.99</td>
+                        <td class="numeric">1422.99</td>
+                        <td class="numeric">547.30</td>
+                        <td class="numeric">589.40</td>
+                        <td class="numeric">542.10</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">66.23</td>
+                        <td class="numeric">1288.09</td>
+                        <td class="numeric">557.20</td>
+                        <td class="numeric">384.90</td>
+                        <td class="numeric">552.40</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">68.27</td>
+                        <td class="numeric">954.97</td>
+                        <td class="numeric">554.50</td>
+                        <td class="numeric">291.10</td>
+                        <td class="numeric">548.80</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">65.60</td>
+                        <td class="numeric">937.95</td>
+                        <td class="numeric">551.20</td>
+                        <td class="numeric">273.90</td>
+                        <td class="numeric">545.80</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">65.29</td>
+                        <td class="numeric">1358.01</td>
+                        <td class="numeric">562.10</td>
+                        <td class="numeric">260.30</td>
+                        <td class="numeric">558.40</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">66.79</td>
+                        <td class="numeric">1155.33</td>
+                        <td class="numeric">541.20</td>
+                        <td class="numeric">259.70</td>
+                        <td class="numeric">536.50</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">123.99</td>
+                        <td class="numeric">2489.44</td>
+                        <td class="numeric">1005.60</td>
+                        <td class="numeric">1187.40</td>
+                        <td class="numeric">996.60</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">122.06</td>
+                        <td class="numeric">1945.60</td>
+                        <td class="numeric">986.90</td>
+                        <td class="numeric">835.90</td>
+                        <td class="numeric">979.10</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">125.84</td>
+                        <td class="numeric">1997.59</td>
+                        <td class="numeric">1021.20</td>
+                        <td class="numeric">709.20</td>
+                        <td class="numeric">1012.00</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">118.42</td>
+                        <td class="numeric">1755.44</td>
+                        <td class="numeric">958.10</td>
+                        <td class="numeric">680.50</td>
+                        <td class="numeric">950.50</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">121.11</td>
+                        <td class="numeric">1806.12</td>
+                        <td class="numeric">983.50</td>
+                        <td class="numeric">700.10</td>
+                        <td class="numeric">973.20</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">120.17</td>
+                        <td class="numeric">1779.32</td>
+                        <td class="numeric">975.80</td>
+                        <td class="numeric">686.80</td>
+                        <td class="numeric">965.70</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">237.90</td>
+                        <td class="numeric">4421.69</td>
+                        <td class="numeric">1924.40</td>
+                        <td class="numeric">2379.80</td>
+                        <td class="numeric">1911.00</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">224.45</td>
+                        <td class="numeric">3571.32</td>
+                        <td class="numeric">1815.70</td>
+                        <td class="numeric">1568.40</td>
+                        <td class="numeric">1802.10</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">219.58</td>
+                        <td class="numeric">3357.03</td>
+                        <td class="numeric">1776.80</td>
+                        <td class="numeric">1450.60</td>
+                        <td class="numeric">1762.20</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">233.34</td>
+                        <td class="numeric">3407.47</td>
+                        <td class="numeric">1889.00</td>
+                        <td class="numeric">1389.00</td>
+                        <td class="numeric">1873.10</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">232.60</td>
+                        <td class="numeric">3498.01</td>
+                        <td class="numeric">1878.80</td>
+                        <td class="numeric">1458.80</td>
+                        <td class="numeric">1866.30</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">227.56</td>
+                        <td class="numeric">3555.12</td>
+                        <td class="numeric">1839.60</td>
+                        <td class="numeric">1518.70</td>
+                        <td class="numeric">1825.20</td>
+                    </tr>
+                    <tr>
+                        <td>env96_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">96</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">N/A</td>
+                        <td class="numeric">N/A</td>
+                        <td class="numeric">N/A</td>
+                        <td class="numeric">N/A</td>
+                        <td class="numeric">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>💾 GPU Memory Usage (MB)</h2>
+            <table id="gpuMemTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('gpuMemTable', 0)">Run ID</th>
+                        <th onclick="sortTable('gpuMemTable', 1)">Mode</th>
+                        <th onclick="sortTable('gpuMemTable', 2)" class="numeric">Envs</th>
+                        <th onclick="sortTable('gpuMemTable', 3)" class="numeric">MBS</th>
+                        <th onclick="sortTable('gpuMemTable', 4)" class="numeric">GPU 0-1 Avg</th>
+                        <th onclick="sortTable('gpuMemTable', 5)" class="numeric">GPU 0-1 Max</th>
+                        <th onclick="sortTable('gpuMemTable', 6)" class="numeric">GPU 0-1 Stable</th>
+                        <th onclick="sortTable('gpuMemTable', 7)" class="numeric">GPU 2-3 Avg</th>
+                        <th onclick="sortTable('gpuMemTable', 8)" class="numeric">GPU 2-3 Max</th>
+                        <th onclick="sortTable('gpuMemTable', 9)" class="numeric">GPU 2-3 Stable</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>env2_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">5864</td>
+                        <td class="numeric">16528</td>
+                        <td class="numeric">8600</td>
+                        <td class="numeric">14554</td>
+                        <td class="numeric">30267</td>
+                        <td class="numeric">20118</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">5544</td>
+                        <td class="numeric">8639</td>
+                        <td class="numeric">8624</td>
+                        <td class="numeric">13879</td>
+                        <td class="numeric">30275</td>
+                        <td class="numeric">19736</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">6643</td>
+                        <td class="numeric">16528</td>
+                        <td class="numeric">8615</td>
+                        <td class="numeric">14124</td>
+                        <td class="numeric">30251</td>
+                        <td class="numeric">18985</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">5511</td>
+                        <td class="numeric">16541</td>
+                        <td class="numeric">8273</td>
+                        <td class="numeric">13385</td>
+                        <td class="numeric">30221</td>
+                        <td class="numeric">18487</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">5663</td>
+                        <td class="numeric">16152</td>
+                        <td class="numeric">8617</td>
+                        <td class="numeric">13718</td>
+                        <td class="numeric">28927</td>
+                        <td class="numeric">19154</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">5516</td>
+                        <td class="numeric">16528</td>
+                        <td class="numeric">8283</td>
+                        <td class="numeric">14006</td>
+                        <td class="numeric">34473</td>
+                        <td class="numeric">19728</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">8341</td>
+                        <td class="numeric">17070</td>
+                        <td class="numeric">9376</td>
+                        <td class="numeric">15334</td>
+                        <td class="numeric">30265</td>
+                        <td class="numeric">19363</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">6640</td>
+                        <td class="numeric">9424</td>
+                        <td class="numeric">9388</td>
+                        <td class="numeric">14677</td>
+                        <td class="numeric">30275</td>
+                        <td class="numeric">19323</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">8153</td>
+                        <td class="numeric">17070</td>
+                        <td class="numeric">9380</td>
+                        <td class="numeric">14828</td>
+                        <td class="numeric">30239</td>
+                        <td class="numeric">18833</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">6498</td>
+                        <td class="numeric">9424</td>
+                        <td class="numeric">9396</td>
+                        <td class="numeric">14193</td>
+                        <td class="numeric">30221</td>
+                        <td class="numeric">19012</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">6571</td>
+                        <td class="numeric">17089</td>
+                        <td class="numeric">9351</td>
+                        <td class="numeric">14308</td>
+                        <td class="numeric">31247</td>
+                        <td class="numeric">19300</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">6605</td>
+                        <td class="numeric">16152</td>
+                        <td class="numeric">9405</td>
+                        <td class="numeric">14661</td>
+                        <td class="numeric">33221</td>
+                        <td class="numeric">19772</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">10563</td>
+                        <td class="numeric">18173</td>
+                        <td class="numeric">10966</td>
+                        <td class="numeric">16033</td>
+                        <td class="numeric">30265</td>
+                        <td class="numeric">18905</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">10500</td>
+                        <td class="numeric">18173</td>
+                        <td class="numeric">10962</td>
+                        <td class="numeric">15822</td>
+                        <td class="numeric">30265</td>
+                        <td class="numeric">18675</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">9459</td>
+                        <td class="numeric">18135</td>
+                        <td class="numeric">10709</td>
+                        <td class="numeric">15249</td>
+                        <td class="numeric">30247</td>
+                        <td class="numeric">18187</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">10533</td>
+                        <td class="numeric">18173</td>
+                        <td class="numeric">10913</td>
+                        <td class="numeric">15690</td>
+                        <td class="numeric">30269</td>
+                        <td class="numeric">18657</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">9700</td>
+                        <td class="numeric">18116</td>
+                        <td class="numeric">10958</td>
+                        <td class="numeric">15611</td>
+                        <td class="numeric">31247</td>
+                        <td class="numeric">18970</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">8353</td>
+                        <td class="numeric">15939</td>
+                        <td class="numeric">11000</td>
+                        <td class="numeric">15457</td>
+                        <td class="numeric">28943</td>
+                        <td class="numeric">19735</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">12738</td>
+                        <td class="numeric">20292</td>
+                        <td class="numeric">13933</td>
+                        <td class="numeric">16715</td>
+                        <td class="numeric">30269</td>
+                        <td class="numeric">18810</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">13079</td>
+                        <td class="numeric">20342</td>
+                        <td class="numeric">13899</td>
+                        <td class="numeric">16460</td>
+                        <td class="numeric">30285</td>
+                        <td class="numeric">18571</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">11342</td>
+                        <td class="numeric">15939</td>
+                        <td class="numeric">13893</td>
+                        <td class="numeric">15658</td>
+                        <td class="numeric">30255</td>
+                        <td class="numeric">18664</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">11385</td>
+                        <td class="numeric">13939</td>
+                        <td class="numeric">13679</td>
+                        <td class="numeric">16065</td>
+                        <td class="numeric">30269</td>
+                        <td class="numeric">18823</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">13332</td>
+                        <td class="numeric">20342</td>
+                        <td class="numeric">13853</td>
+                        <td class="numeric">16359</td>
+                        <td class="numeric">31199</td>
+                        <td class="numeric">18469</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">12902</td>
+                        <td class="numeric">20342</td>
+                        <td class="numeric">13849</td>
+                        <td class="numeric">16968</td>
+                        <td class="numeric">28943</td>
+                        <td class="numeric">19891</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">18156</td>
+                        <td class="numeric">20006</td>
+                        <td class="numeric">19855</td>
+                        <td class="numeric">17171</td>
+                        <td class="numeric">30261</td>
+                        <td class="numeric">18583</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">18019</td>
+                        <td class="numeric">20006</td>
+                        <td class="numeric">20002</td>
+                        <td class="numeric">16850</td>
+                        <td class="numeric">30267</td>
+                        <td class="numeric">18537</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">17852</td>
+                        <td class="numeric">20006</td>
+                        <td class="numeric">19957</td>
+                        <td class="numeric">16757</td>
+                        <td class="numeric">30237</td>
+                        <td class="numeric">18315</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">17887</td>
+                        <td class="numeric">20006</td>
+                        <td class="numeric">19980</td>
+                        <td class="numeric">16742</td>
+                        <td class="numeric">30269</td>
+                        <td class="numeric">18535</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">17947</td>
+                        <td class="numeric">20694</td>
+                        <td class="numeric">19750</td>
+                        <td class="numeric">16908</td>
+                        <td class="numeric">28927</td>
+                        <td class="numeric">18826</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">17784</td>
+                        <td class="numeric">20006</td>
+                        <td class="numeric">19718</td>
+                        <td class="numeric">18036</td>
+                        <td class="numeric">34473</td>
+                        <td class="numeric">21116</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">30590</td>
+                        <td class="numeric">32103</td>
+                        <td class="numeric">32102</td>
+                        <td class="numeric">17458</td>
+                        <td class="numeric">30263</td>
+                        <td class="numeric">18234</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">29878</td>
+                        <td class="numeric">32105</td>
+                        <td class="numeric">32076</td>
+                        <td class="numeric">17262</td>
+                        <td class="numeric">30275</td>
+                        <td class="numeric">18345</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">30004</td>
+                        <td class="numeric">32104</td>
+                        <td class="numeric">31919</td>
+                        <td class="numeric">17271</td>
+                        <td class="numeric">30253</td>
+                        <td class="numeric">18350</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">30182</td>
+                        <td class="numeric">32104</td>
+                        <td class="numeric">32066</td>
+                        <td class="numeric">17304</td>
+                        <td class="numeric">30221</td>
+                        <td class="numeric">18297</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">29978</td>
+                        <td class="numeric">32104</td>
+                        <td class="numeric">32094</td>
+                        <td class="numeric">17453</td>
+                        <td class="numeric">29911</td>
+                        <td class="numeric">18636</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">29905</td>
+                        <td class="numeric">32105</td>
+                        <td class="numeric">32101</td>
+                        <td class="numeric">18908</td>
+                        <td class="numeric">34521</td>
+                        <td class="numeric">21544</td>
+                    </tr>
+                    <tr>
+                        <td>env96_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">96</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">43716</td>
+                        <td class="numeric">44269</td>
+                        <td class="numeric">44264</td>
+                        <td class="numeric">17343</td>
+                        <td class="numeric">21479</td>
+                        <td class="numeric">17475</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ GPU Utilization & Host Metrics</h2>
+            <table id="utilTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('utilTable', 0)">Run ID</th>
+                        <th onclick="sortTable('utilTable', 1)">Mode</th>
+                        <th onclick="sortTable('utilTable', 2)" class="numeric">Envs</th>
+                        <th onclick="sortTable('utilTable', 3)" class="numeric">MBS</th>
+                        <th onclick="sortTable('utilTable', 4)" class="numeric">GPU 0-1 Util Avg (%)</th>
+                        <th onclick="sortTable('utilTable', 5)" class="numeric">GPU 0-1 Util Max (%)</th>
+                        <th onclick="sortTable('utilTable', 6)" class="numeric">GPU 2-3 Util Avg (%)</th>
+                        <th onclick="sortTable('utilTable', 7)" class="numeric">GPU 2-3 Util Max (%)</th>
+                        <th onclick="sortTable('utilTable', 8)" class="numeric">CPU Avg (%)</th>
+                        <th onclick="sortTable('utilTable', 9)" class="numeric">Host Mem Avg (%)</th>
+                        <th onclick="sortTable('utilTable', 10)" class="numeric">Monitor Duration (s)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>env2_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">5.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">11.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.0</td>
+                        <td class="numeric">17.1</td>
+                        <td class="numeric">550</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">3.9</td>
+                        <td class="numeric">45.0</td>
+                        <td class="numeric">7.2</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.1</td>
+                        <td class="numeric">16.9</td>
+                        <td class="numeric">520</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">14.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">7.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.3</td>
+                        <td class="numeric">16.8</td>
+                        <td class="numeric">550</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">7.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">6.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.1</td>
+                        <td class="numeric">16.5</td>
+                        <td class="numeric">490</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">5.8</td>
+                        <td class="numeric">31.0</td>
+                        <td class="numeric">6.8</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.2</td>
+                        <td class="numeric">16.8</td>
+                        <td class="numeric">490</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">7.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">7.8</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.2</td>
+                        <td class="numeric">16.8</td>
+                        <td class="numeric">490</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">20.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">12.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.7</td>
+                        <td class="numeric">18.4</td>
+                        <td class="numeric">790</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">6.5</td>
+                        <td class="numeric">56.0</td>
+                        <td class="numeric">11.2</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.4</td>
+                        <td class="numeric">18.1</td>
+                        <td class="numeric">630</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">22.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">12.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.3</td>
+                        <td class="numeric">18.7</td>
+                        <td class="numeric">740</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">6.6</td>
+                        <td class="numeric">55.0</td>
+                        <td class="numeric">10.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.5</td>
+                        <td class="numeric">18.4</td>
+                        <td class="numeric">580</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">9.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">11.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.5</td>
+                        <td class="numeric">18.6</td>
+                        <td class="numeric">590</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">9.8</td>
+                        <td class="numeric">56.0</td>
+                        <td class="numeric">11.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.4</td>
+                        <td class="numeric">18.5</td>
+                        <td class="numeric">570</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">29.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">16.1</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.5</td>
+                        <td class="numeric">21.3</td>
+                        <td class="numeric">1170</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">31.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">13.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.8</td>
+                        <td class="numeric">21.2</td>
+                        <td class="numeric">1010</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">22.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">13.1</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.5</td>
+                        <td class="numeric">20.9</td>
+                        <td class="numeric">880</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">33.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">12.8</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">5.1</td>
+                        <td class="numeric">20.9</td>
+                        <td class="numeric">990</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">21.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">15.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.6</td>
+                        <td class="numeric">21.0</td>
+                        <td class="numeric">870</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">12.3</td>
+                        <td class="numeric">92.0</td>
+                        <td class="numeric">14.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">3.8</td>
+                        <td class="numeric">21.2</td>
+                        <td class="numeric">720</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">20.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">20.1</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.6</td>
+                        <td class="numeric">26.8</td>
+                        <td class="numeric">1600</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">27.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">20.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">5.3</td>
+                        <td class="numeric">26.2</td>
+                        <td class="numeric">1460</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">17.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">18.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.1</td>
+                        <td class="numeric">25.8</td>
+                        <td class="numeric">1160</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">17.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">21.8</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.1</td>
+                        <td class="numeric">26.2</td>
+                        <td class="numeric">1130</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">36.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">24.1</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">6.2</td>
+                        <td class="numeric">25.9</td>
+                        <td class="numeric">1540</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">31.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">28.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">5.2</td>
+                        <td class="numeric">26.2</td>
+                        <td class="numeric">1330</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">20.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">18.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.7</td>
+                        <td class="numeric">36.7</td>
+                        <td class="numeric">2670</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">16.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">22.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.4</td>
+                        <td class="numeric">36.9</td>
+                        <td class="numeric">2130</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">21.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">26.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.7</td>
+                        <td class="numeric">35.8</td>
+                        <td class="numeric">2180</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">19.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">29.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.4</td>
+                        <td class="numeric">36.1</td>
+                        <td class="numeric">1940</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">18.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">31.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.6</td>
+                        <td class="numeric">36.1</td>
+                        <td class="numeric">1990</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">17.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">34.2</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.6</td>
+                        <td class="numeric">35.8</td>
+                        <td class="numeric">1970</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">18.5</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">19.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.4</td>
+                        <td class="numeric">58.0</td>
+                        <td class="numeric">4590</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">22.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">22.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.8</td>
+                        <td class="numeric">56.5</td>
+                        <td class="numeric">3760</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">27.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">31.3</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.8</td>
+                        <td class="numeric">56.3</td>
+                        <td class="numeric">3550</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">24.9</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">32.7</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.8</td>
+                        <td class="numeric">56.6</td>
+                        <td class="numeric">3580</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">25.4</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">36.6</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.9</td>
+                        <td class="numeric">56.3</td>
+                        <td class="numeric">3690</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">22.8</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">39.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">4.8</td>
+                        <td class="numeric">56.3</td>
+                        <td class="numeric">3740</td>
+                    </tr>
+                    <tr>
+                        <td>env96_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">96</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">6.0</td>
+                        <td class="numeric">100.0</td>
+                        <td class="numeric">0.0</td>
+                        <td class="numeric">21.0</td>
+                        <td class="numeric">2.7</td>
+                        <td class="numeric">80.3</td>
+                        <td class="numeric">22320</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>🔄 Phase-wise Analysis (Rollout vs Training)</h2>
+            <table id="phaseTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable('phaseTable', 0)">Run ID</th>
+                        <th onclick="sortTable('phaseTable', 1)">Mode</th>
+                        <th onclick="sortTable('phaseTable', 2)" class="numeric">Envs</th>
+                        <th onclick="sortTable('phaseTable', 3)" class="numeric">MBS</th>
+                        <th onclick="sortTable('phaseTable', 4)" class="numeric">Rollout Duration (s)</th>
+                        <th onclick="sortTable('phaseTable', 5)" class="numeric">Rollout GPU 0-1 Mem (MB)</th>
+                        <th onclick="sortTable('phaseTable', 6)" class="numeric">Rollout GPU 2-3 Mem (MB)</th>
+                        <th onclick="sortTable('phaseTable', 7)" class="numeric">Training Duration (s)</th>
+                        <th onclick="sortTable('phaseTable', 8)" class="numeric">Training GPU 0-1 Mem (MB)</th>
+                        <th onclick="sortTable('phaseTable', 9)" class="numeric">Training GPU 2-3 Mem (MB)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>env2_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">240</td>
+                        <td class="numeric">9570</td>
+                        <td class="numeric">12971</td>
+                        <td class="numeric">310</td>
+                        <td class="numeric">8605</td>
+                        <td class="numeric">19788</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">242</td>
+                        <td class="numeric">8032</td>
+                        <td class="numeric">12838</td>
+                        <td class="numeric">278</td>
+                        <td class="numeric">8616</td>
+                        <td class="numeric">19615</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">239</td>
+                        <td class="numeric">14006</td>
+                        <td class="numeric">12862</td>
+                        <td class="numeric">311</td>
+                        <td class="numeric">9283</td>
+                        <td class="numeric">18718</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">240</td>
+                        <td class="numeric">9766</td>
+                        <td class="numeric">13791</td>
+                        <td class="numeric">250</td>
+                        <td class="numeric">8617</td>
+                        <td class="numeric">19256</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">248</td>
+                        <td class="numeric">9627</td>
+                        <td class="numeric">13791</td>
+                        <td class="numeric">242</td>
+                        <td class="numeric">8617</td>
+                        <td class="numeric">19154</td>
+                    </tr>
+                    <tr>
+                        <td>env2_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">246</td>
+                        <td class="numeric">9766</td>
+                        <td class="numeric">13791</td>
+                        <td class="numeric">244</td>
+                        <td class="numeric">8628</td>
+                        <td class="numeric">19728</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">307</td>
+                        <td class="numeric">15981</td>
+                        <td class="numeric">14036</td>
+                        <td class="numeric">483</td>
+                        <td class="numeric">9371</td>
+                        <td class="numeric">19016</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">305</td>
+                        <td class="numeric">9184</td>
+                        <td class="numeric">14445</td>
+                        <td class="numeric">325</td>
+                        <td class="numeric">9389</td>
+                        <td class="numeric">19267</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">308</td>
+                        <td class="numeric">16665</td>
+                        <td class="numeric">14248</td>
+                        <td class="numeric">432</td>
+                        <td class="numeric">9343</td>
+                        <td class="numeric">18632</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">308</td>
+                        <td class="numeric">9229</td>
+                        <td class="numeric">14406</td>
+                        <td class="numeric">272</td>
+                        <td class="numeric">9394</td>
+                        <td class="numeric">19094</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">315</td>
+                        <td class="numeric">9793</td>
+                        <td class="numeric">14282</td>
+                        <td class="numeric">275</td>
+                        <td class="numeric">9346</td>
+                        <td class="numeric">19431</td>
+                    </tr>
+                    <tr>
+                        <td>env4_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">300</td>
+                        <td class="numeric">9870</td>
+                        <td class="numeric">14843</td>
+                        <td class="numeric">270</td>
+                        <td class="numeric">9423</td>
+                        <td class="numeric">19942</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">400</td>
+                        <td class="numeric">14240</td>
+                        <td class="numeric">11329</td>
+                        <td class="numeric">770</td>
+                        <td class="numeric">12517</td>
+                        <td class="numeric">18363</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">392</td>
+                        <td class="numeric">17553</td>
+                        <td class="numeric">14843</td>
+                        <td class="numeric">618</td>
+                        <td class="numeric">11865</td>
+                        <td class="numeric">18337</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">392</td>
+                        <td class="numeric">14391</td>
+                        <td class="numeric">15631</td>
+                        <td class="numeric">488</td>
+                        <td class="numeric">10935</td>
+                        <td class="numeric">18499</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">408</td>
+                        <td class="numeric">14502</td>
+                        <td class="numeric">12623</td>
+                        <td class="numeric">582</td>
+                        <td class="numeric">12732</td>
+                        <td class="numeric">18242</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">411</td>
+                        <td class="numeric">14554</td>
+                        <td class="numeric">15747</td>
+                        <td class="numeric">459</td>
+                        <td class="numeric">10954</td>
+                        <td class="numeric">18905</td>
+                    </tr>
+                    <tr>
+                        <td>env8_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">377</td>
+                        <td class="numeric">11222</td>
+                        <td class="numeric">15501</td>
+                        <td class="numeric">343</td>
+                        <td class="numeric">11000</td>
+                        <td class="numeric">19832</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">596</td>
+                        <td class="numeric">15412</td>
+                        <td class="numeric">16370</td>
+                        <td class="numeric">1004</td>
+                        <td class="numeric">13893</td>
+                        <td class="numeric">18539</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">590</td>
+                        <td class="numeric">17083</td>
+                        <td class="numeric">16347</td>
+                        <td class="numeric">870</td>
+                        <td class="numeric">13884</td>
+                        <td class="numeric">18391</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">606</td>
+                        <td class="numeric">13717</td>
+                        <td class="numeric">16324</td>
+                        <td class="numeric">554</td>
+                        <td class="numeric">13891</td>
+                        <td class="numeric">18717</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">585</td>
+                        <td class="numeric">13474</td>
+                        <td class="numeric">16188</td>
+                        <td class="numeric">545</td>
+                        <td class="numeric">13922</td>
+                        <td class="numeric">18872</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">582</td>
+                        <td class="numeric">15264</td>
+                        <td class="numeric">12099</td>
+                        <td class="numeric">958</td>
+                        <td class="numeric">15132</td>
+                        <td class="numeric">18059</td>
+                    </tr>
+                    <tr>
+                        <td>env16_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">594</td>
+                        <td class="numeric">16796</td>
+                        <td class="numeric">16370</td>
+                        <td class="numeric">736</td>
+                        <td class="numeric">13826</td>
+                        <td class="numeric">19663</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">1052</td>
+                        <td class="numeric">18772</td>
+                        <td class="numeric">16899</td>
+                        <td class="numeric">1618</td>
+                        <td class="numeric">19959</td>
+                        <td class="numeric">18391</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1036</td>
+                        <td class="numeric">19527</td>
+                        <td class="numeric">16881</td>
+                        <td class="numeric">1094</td>
+                        <td class="numeric">19964</td>
+                        <td class="numeric">18508</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1067</td>
+                        <td class="numeric">18816</td>
+                        <td class="numeric">16706</td>
+                        <td class="numeric">1113</td>
+                        <td class="numeric">19953</td>
+                        <td class="numeric">18296</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1007</td>
+                        <td class="numeric">19603</td>
+                        <td class="numeric">16780</td>
+                        <td class="numeric">933</td>
+                        <td class="numeric">20001</td>
+                        <td class="numeric">18574</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1029</td>
+                        <td class="numeric">19691</td>
+                        <td class="numeric">16680</td>
+                        <td class="numeric">961</td>
+                        <td class="numeric">19951</td>
+                        <td class="numeric">18868</td>
+                    </tr>
+                    <tr>
+                        <td>env32_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1021</td>
+                        <td class="numeric">19629</td>
+                        <td class="numeric">16670</td>
+                        <td class="numeric">949</td>
+                        <td class="numeric">19915</td>
+                        <td class="numeric">21270</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">1963</td>
+                        <td class="numeric">31443</td>
+                        <td class="numeric">17180</td>
+                        <td class="numeric">2627</td>
+                        <td class="numeric">32102</td>
+                        <td class="numeric">18319</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs2</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">2</td>
+                        <td class="numeric">1856</td>
+                        <td class="numeric">30855</td>
+                        <td class="numeric">17079</td>
+                        <td class="numeric">1904</td>
+                        <td class="numeric">32074</td>
+                        <td class="numeric">18333</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs4</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">4</td>
+                        <td class="numeric">1817</td>
+                        <td class="numeric">31458</td>
+                        <td class="numeric">17161</td>
+                        <td class="numeric">1733</td>
+                        <td class="numeric">32101</td>
+                        <td class="numeric">18370</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs8</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">8</td>
+                        <td class="numeric">1927</td>
+                        <td class="numeric">31463</td>
+                        <td class="numeric">17193</td>
+                        <td class="numeric">1653</td>
+                        <td class="numeric">32102</td>
+                        <td class="numeric">18364</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs16</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">16</td>
+                        <td class="numeric">1921</td>
+                        <td class="numeric">31089</td>
+                        <td class="numeric">17163</td>
+                        <td class="numeric">1769</td>
+                        <td class="numeric">32102</td>
+                        <td class="numeric">18689</td>
+                    </tr>
+                    <tr>
+                        <td>env64_mbs32</td>
+                        <td>split</td>
+                        <td class="numeric">64</td>
+                        <td class="numeric">32</td>
+                        <td class="numeric">1880</td>
+                        <td class="numeric">30841</td>
+                        <td class="numeric">17189</td>
+                        <td class="numeric">1860</td>
+                        <td class="numeric">32102</td>
+                        <td class="numeric">21577</td>
+                    </tr>
+                    <tr>
+                        <td>env96_mbs1</td>
+                        <td>split</td>
+                        <td class="numeric">96</td>
+                        <td class="numeric">1</td>
+                        <td class="numeric">230</td>
+                        <td class="numeric">15938</td>
+                        <td class="numeric">12349</td>
+                        <td class="numeric">22090</td>
+                        <td class="numeric">44183</td>
+                        <td class="numeric">17475</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function sortTable(tableId, columnIndex) {
+            const table = document.getElementById(tableId);
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            // Determine sort direction
+            const currentSort = table.dataset.sortColumn;
+            const currentDir = table.dataset.sortDir || 'asc';
+            const newDir = (currentSort == columnIndex && currentDir === 'asc') ? 'desc' : 'asc';
+
+            rows.sort((a, b) => {
+                let aVal = a.cells[columnIndex].textContent.trim();
+                let bVal = b.cells[columnIndex].textContent.trim();
+
+                // Handle N/A values
+                if (aVal === 'N/A') return 1;
+                if (bVal === 'N/A') return -1;
+
+                // Try numeric comparison
+                const aNum = parseFloat(aVal);
+                const bNum = parseFloat(bVal);
+
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return newDir === 'asc' ? aNum - bNum : bNum - aNum;
+                }
+
+                // String comparison
+                return newDir === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+
+            // Clear and re-append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Store sort state
+            table.dataset.sortColumn = columnIndex;
+            table.dataset.sortDir = newDir;
+        }
+    </script>
+</body>
+</html>
